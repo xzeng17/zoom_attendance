@@ -1,4 +1,4 @@
-"# zoom_attendance" 
+# zoom_attendance
 
 Please put your input zoom attendance files in the inputCSV folder.
 $ python3 -i load_csv.py
@@ -22,7 +22,7 @@ You must start your file name with section letter in capital, and whatever comes
 All files start with section letter followed by a dash and lab and number
 For example: B-lab1.csv where B is the section, lab1 means this report contains upto lab1's attendance
 
-
+--------For future FLASK_APP---------
 On Mac/Linux
 $ . venv/bin/activate
 $ export FLASK_APP=hello.py
