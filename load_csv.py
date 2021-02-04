@@ -2,7 +2,9 @@ import csv
 import collections
 
 
-def generate_participation_file(input_filename, output_filename, section):
+def generate_participation_file(input_filename, output_filename):
+    section = input_filename[0]
+
     # return a sorted dic with {email: [name, email, False, duration]}
     order_dic = extract_participation(input_filename, section)
 
@@ -159,15 +161,11 @@ def extract_participation(input_filename, section) -> dict:
 
 def main():
     input_name = input("Enter the input CSV filename: ")
-    exist_name = input("Enter the previous section existing CSV filename: ")
-    section = "blank"
-
-    while section != "B" and section != "C":
-        section = input("Section: ")
+    exist_name = input("Enter the filename for previous lab that you want to inherit: ")
 
     input_name = input_name + ".csv"
     exist_name = exist_name + ".csv"
-    generate_participation_file(input_name, exist_name, section)
+    generate_participation_file(input_name, exist_name)
     print("Finished.")
 
 
