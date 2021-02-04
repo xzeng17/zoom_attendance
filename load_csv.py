@@ -2,20 +2,22 @@ import csv
 import collections
 
 
-def generate_participation_file(input_filename, output_filename, initial=False):
+def generate_participation_file(input_filename, output_filename, section):
     # return a sorted dic with {email: [name, email, False, duration]}
-    order_dic = extract_participation(input_filename)
+    order_dic = extract_participation(input_filename, section)
 
-    if initial:
-        init_writing(output_filename, order_dic)
+    if output_filename == ".csv":
+        print("Building init report")
+        init_writing("{}-lab1".format(section)+".csv", order_dic, section)
     else:
-        writing(output_filename, order_dic)
+        print("Building update report")
+        writing(output_filename, order_dic, section)
 
 
-def writing(output_filename, order_dic):
+def writing(output_filename, order_dic, section):
     # return a lab number based on previous lab number
     lab = get_lab(output_filename)
-    newfilename = output_filename.split(".")[0] + " upto lab{0}".format(lab) + ".csv"
+    newfilename = output_filename.split("-")[0] + "-lab{0}".format(lab, section) + ".csv"
     with open('outputCSV/{0}'.format(output_filename), 'r', newline='') as input_file:
         spamreader = csv.reader(input_file)
         with open('outputCSV/{0}'.format(newfilename), 'w+', newline='') as output_file:
@@ -31,7 +33,8 @@ def writing(output_filename, order_dic):
                     writer.writerow(row + [status])
     print('Output file saved as: ' + 'outputCSV/{0}'.format(newfilename))
 
-def init_writing(output_filename, order_dic):
+
+def init_writing(output_filename, order_dic, section):
     with open('outputCSV/{0}'.format(output_filename), 'w+', newline='') as output_file:
         fieldnames = ['Name', 'Email', 'Lab1']
         writer = csv.DictWriter(output_file, fieldnames=fieldnames)
@@ -40,6 +43,7 @@ def init_writing(output_filename, order_dic):
             status = get_status(value)
             writer.writerow({'Name': value[0], 'Email': value[1], 'Lab1': status})
     print('Initial output file saved as: '+'outputCSV/{0}'.format(output_filename))
+
 
 # calculate based on if on-time and accumulative duration
 def get_status(value: []) -> str:
@@ -62,7 +66,7 @@ def university_email(email: str) -> bool:
     return False
 
 
-def participation(row: []) -> (bool, int):
+def participation(row: [], section) -> (bool, int):
     on_time_result = False
     duration = 0
 
@@ -78,18 +82,20 @@ def participation(row: []) -> (bool, int):
     leave_hour = int(leave_time[0])
     leave_minute = int(leave_time[1])
 
-    if join_hour < 9 and leave_hour > 8:
-        join_hour = 9
+    begin_hour = get_begin_time(section)
+
+    if join_hour < begin_hour and leave_hour > begin_hour-1:
+        join_hour = begin_hour
         join_minute = 0
 
-    if leave_hour < 9:
-        leave_hour = 9
+    if leave_hour < begin_hour:
+        leave_hour = begin_hour
         leave_minute = 0
 
-    if join_hour == 9 and join_minute <= 5:
+    if join_hour == begin_hour and join_minute <= 5:
         on_time_result = True
         duration += max(0, leave_minute - join_minute) + (leave_hour - join_hour) * 60
-    elif join_hour == 9 and join_minute > 5:
+    elif join_hour == begin_hour and join_minute > 5:
         on_time_result = False
         duration += max(0, leave_minute - join_minute) + (leave_hour - join_hour) * 60
     return on_time_result, duration
@@ -109,7 +115,13 @@ def get_lab(output_filename) -> int:
     return lab
 
 
-def extract_participation(input_filename) -> dict:
+def get_begin_time(section:str)-> int:
+    if section == "B":
+        return 15
+    return 9
+
+
+def extract_participation(input_filename, section) -> dict:
     with open('inputCSV/{0}'.format(input_filename), newline='') as inputfile:
         # spamreader = csv.reader(inputfile, delimiter=' ', quotechar='|')
         spamreader = csv.reader(inputfile)
@@ -133,7 +145,7 @@ def extract_participation(input_filename) -> dict:
             if not university_email(email):  # ignore non-university email
                 continue
 
-            is_on_time, duration = participation(row)
+            is_on_time, duration = participation(row, section)
             if email not in dic:
                 dic[email] = [name, email, is_on_time, duration]
             else:
@@ -147,19 +159,17 @@ def extract_participation(input_filename) -> dict:
 
 def main():
     input_name = input("Enter the input CSV filename: ")
-    output_name = input("Enter the output CSV filename: ")
-    initial = "blank"
-    while initial != "Y" and initial != "N":
-        initial = input("Initial input? (Y/N): ")
-    boolean = False
-    if initial == "Y":
-        boolean = True
+    exist_name = input("Enter the previous section existing CSV filename: ")
+    section = "blank"
+
+    while section != "B" and section != "C":
+        section = input("Section: ")
+
     input_name = input_name + ".csv"
-    output_name = output_name + ".csv"
-    generate_participation_file(input_name, output_name, boolean)
+    exist_name = exist_name + ".csv"
+    generate_participation_file(input_name, exist_name, section)
     print("Finished.")
 
 
 # execute the script
-if __name__ == main:
-    main()
+main()
