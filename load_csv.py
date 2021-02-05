@@ -31,7 +31,7 @@ def writing(output_filename, order_dic, section):
                     writer.writerow(row + ["lab{}".format(lab)])
                 else:
                     email = row[1]
-                    status = get_status(order_dic[email])
+                    status = get_status(order_dic, email)
                     writer.writerow(row + [status])
     print('Output file saved as: ' + 'outputCSV/{0}'.format(newfilename))
 
@@ -42,14 +42,17 @@ def init_writing(output_filename, order_dic, section):
         writer = csv.DictWriter(output_file, fieldnames=fieldnames)
         writer.writeheader()
         for value in order_dic.values():
-            status = get_status(value)
+            status = get_status(order_dic, value[1])
             writer.writerow({'Name': value[0], 'Email': value[1], 'Lab1': status})
     print('Initial output file saved as: '+'outputCSV/{0}'.format(output_filename))
 
 
 # calculate based on if on-time and accumulative duration
-def get_status(value: []) -> str:
+def get_status(order_dic, email) -> str:
     status = "Absent"
+    if email not in order_dic:
+        return status
+    value = order_dic[email]
     student_is_on_time = value[2]
     duration = value[3]
     if student_is_on_time and duration >= 10:
