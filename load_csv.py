@@ -31,7 +31,13 @@ def writing(output_filename, order_dic, section):
                     writer.writerow(row + ["lab{}".format(lab)])
                 else:
                     email = row[1]
-                    status = get_status(order_dic, email)
+                    fullname = row[0].split(" ")
+                    lastname = fullname[-1]
+                    status = "Absent"
+                    # if university_email(email): 
+                    #     status = get_status(order_dic, email)
+                    # else:  
+                    status = get_status(order_dic, lastname)
                     writer.writerow(row + [status])
     print('Output file saved as: ' + 'outputCSV/{0}'.format(newfilename))
 
@@ -48,11 +54,11 @@ def init_writing(output_filename, order_dic, section):
 
 
 # calculate based on if on-time and accumulative duration
-def get_status(order_dic, email) -> str:
+def get_status(order_dic, key) -> str:
     status = "Absent"
-    if email not in order_dic:
+    if key not in order_dic:
         return status
-    value = order_dic[email]
+    value = order_dic[key]
     student_is_on_time = value[2]
     duration = value[3]
     if student_is_on_time and duration >= 10:
@@ -122,7 +128,7 @@ def get_lab(output_filename) -> int:
 
 def get_begin_time(section:str)-> int:
     if section == "B":
-        return 15
+        return 3
     return 9
 
 
@@ -147,17 +153,25 @@ def extract_participation(input_filename, section) -> dict:
             #     break
             name: str = row[0]
             email: str = row[1]
-            if not university_email(email):  # ignore non-university email
-                continue
+            # if not university_email(email):  # ignore non-university email
+            #     continue
 
             is_on_time, duration = participation(row, section)
-            if email not in dic:
+            if email and email not in dic:
                 dic[email] = [name, email, is_on_time, duration]
-            else:
+            elif email in dic:
                 dic[email][2] = (dic[email][2] or is_on_time)
                 dic[email][3] += duration
+            fullname = name.split(" ")
+            lastname = fullname[-1] 
+            if lastname not in dic:
+                dic[lastname] = [name, email, is_on_time, duration]
+            else:
+                dic[lastname][2] = (dic[lastname][2] or is_on_time)
+                dic[lastname][3] += duration
 
     # dic[email] = [name, email, False, duration]
+    # dic[lastname] = [name, email, False, duration]
     order_dic = collections.OrderedDict(sorted(dic.items()))
     return order_dic
 

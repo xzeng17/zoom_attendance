@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="11eac233-e99a-4574-bdf9-f4d8a58ace41" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/load_csv.py" beforeDir="false" afterPath="$PROJECT_DIR$/load_csv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputCSV/B-lab1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/outputCSV/B-lab1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputCSV/B-lab2.csv" beforeDir="false" />
-    </list>
+    <list default="true" id="11eac233-e99a-4574-bdf9-f4d8a58ace41" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
